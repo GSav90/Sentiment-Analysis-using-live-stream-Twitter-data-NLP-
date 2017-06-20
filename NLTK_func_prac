@@ -1,0 +1,131 @@
+import nltk
+from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+from nltk.corpus import state_union
+from nltk.tokenize import PunktSentenceTokenizer
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import wordnet
+
+def fn_tokenizing():
+
+    EXAMPLE_TEXT = "Hello Mr. Smith, how are you doing today? The weather is great, and Python is awesome. The sky is pinkish-blue. You shouldn't eat cardboard."
+    print(sent_tokenize(EXAMPLE_TEXT))
+    print(word_tokenize(EXAMPLE_TEXT))
+
+
+def fn_stop_words():
+    #words which you don't really need or filler words like a, an the etc
+    example_sentence= "This is an example showing stop word filteration."
+    stop_words=set(stopwords.words("english"))
+    #print(stop_words)
+    words=word_tokenize(example_sentence)
+    filtered_sentence=[w for w in words if not w in stop_words]
+    print(filtered_sentence)
+
+def fn_stemming():
+    #porter stemmer- since 1979
+    ps=PorterStemmer()
+    example_sentence="It is very important to be pythonly when you are pythoning. All the pythoners have atleast pythoned once badly."
+    words=word_tokenize(example_sentence)
+    #stemming=[w for w in words]
+    for w in words:
+        print(ps.stem(w))
+
+def fn_pos_tagging():
+    train_text=state_union.raw("C:\\Users\Gaurav\Desktop\Job hunt\Linkedin Template - Copy.txt")
+    sample_text=state_union.raw("C:\\Users\Gaurav\Desktop\Job hunt\Data Science Template-Linkedin.txt")
+    #print(train_text)
+    cust_sent_tokenizer=PunktSentenceTokenizer(train_text)
+    tokenized= cust_sent_tokenizer.tokenize(sample_text)
+    print('printing tokenized',tokenized,"end of printing tokenized")
+    def process_content():
+        try:
+            for i in tokenized:
+                words=nltk.word_tokenize(i)
+                tagged=nltk.pos_tag(words)
+                print(tagged)
+        except Exception as e:
+            print(str(e))
+
+    process_content()
+
+def fn_chunking():
+    train_text = state_union.raw("C:\\Users\Gaurav\Desktop\Job hunt\Linkedin Template - Copy.txt")
+    sample_text = state_union.raw("C:\\Users\Gaurav\Desktop\Job hunt\Data Science Template-Linkedin.txt")
+    cust_sent_tokenizer = PunktSentenceTokenizer(train_text)
+    tokenized = cust_sent_tokenizer.tokenize(sample_text)
+    print('printing tokenized', tokenized, "end of printing tokenized")
+
+    def process_content():
+        try:
+            for i in tokenized[0:]:
+                words = nltk.word_tokenize(i)
+                tagged = nltk.pos_tag(words)
+                    #print(tagged)
+                chunkgram= r"""Chunk: {<RB.?>*<VB.?>*<NNP>+<NN>?}
+                                                                }<VB.?|IN|DT|TO>+{"""
+                chunkgram_1="""Chunk: {<VB.?|IN|DT|TO>+} """
+                chunkParser = nltk.RegexpParser(chunkgram)
+                chunked = chunkParser.parse(tagged)
+                chunked.draw()
+        except Exception as e:
+            print(str(e))
+    process_content()
+
+def fn_lemmatizing():
+    # It is similar to stemming(it only retains the root of the word) with a difference that the end result is a real word word also sometimes
+    #reduce to synonym
+    lemmatizer= WordNetLemmatizer()
+
+    print(lemmatizer.lemmatize('cats'))
+    print(lemmatizer.lemmatize('better',pos='a'))
+    print(lemmatizer.lemmatize('work'))
+    print(lemmatizer.lemmatize('dropping',pos='a'))
+
+def fn_wordnet():
+    syns= wordnet.synsets("program")
+    #print synset
+    # print(syns[0].name())
+    #
+    # #print just the word
+    # print(syns[0].lemmas()[0].name())
+    #
+    # #print definition of the word
+    # print(syns[0].definition())
+    # #print examples
+    # print(syns[0].examples())
+
+    ##printing synonyms and antonyms of a word
+    synonyms=[]
+    antonyms=[]
+
+
+    for s in wordnet.synsets("good"):
+        for l in s.lemmas():
+            print("l: ",l)
+            synonyms.append(l.name())
+            if l.antonyms():
+                antonyms.append(l.antonyms()[0].name())
+
+    print(set(synonyms))
+    print(set(antonyms))
+
+    ##Finding similarity between words
+    w1= wordnet.synset("ship.n.01")
+    w2=wordnet.synset("boat.n.01")
+    print(w1.wup_similarity(w2))
+
+
+
+def main():
+    #fn_tokenizing()
+    #fn_stop_words()
+    #fn_stemming()
+    #fn_pos_tagging()
+    #fn_chunking()
+
+    #fn_lemmatizing()
+    #print(nltk.__file__)
+    fn_wordnet()
+main()
